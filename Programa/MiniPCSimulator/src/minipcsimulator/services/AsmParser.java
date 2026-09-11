@@ -5,8 +5,9 @@ import java.util.Arrays;
 
 public class AsmParser {
     private static int numberLine = 0;
+    private static ArrayList<ArrayList<String>> newLines = new ArrayList<>();
 
-    public static boolean verifySyntax(ArrayList<String> lines) {
+    public static ArrayList<ArrayList<String>> verifySyntax(ArrayList<String> lines) {
         AsmParser.numberLine = 0;
         for (String line : lines) {
             AsmParser.numberLine++;
@@ -14,12 +15,14 @@ public class AsmParser {
                 throw new RuntimeException("Error de sintaxis en la linea " + AsmParser.numberLine);
             }
         }
-        return true;
+        return AsmParser.newLines;
     }
 
     private static ArrayList<String> getLineArray(String line) {
         // esto divide el array por espacios y comas
-        return new ArrayList<>(Arrays.asList(line.trim().split("[,\\s]+")));
+        ArrayList<String> parts = new ArrayList<>(Arrays.asList(line.trim().split("[,\\s]+")));
+        AsmParser.newLines.add(parts);
+        return parts;
     }
 
     public static boolean isValidRegister(String register) {
