@@ -1,6 +1,7 @@
 package minipcsimulator.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Instruction {
 
@@ -17,15 +18,26 @@ public class Instruction {
         this.instructionParts = originalInstructionParts;
         this.binaryInstruction = binaryInstruction;
 
-        ArrayList<String> parts = originalInstructionParts;
-        this.instructionType = parts.get(0);
-        this.register = parts.get(1);
-        this.value = parts.get(2);
+        ArrayList<String> partsBinary;
+        if (binaryInstruction != null && !binaryInstruction.isEmpty()) {
+            partsBinary = new ArrayList<>(Arrays.asList(binaryInstruction.trim().split(" ")));
+            this.instructionType = partsBinary.get(0);
+            this.register = partsBinary.get(1);
+            this.value = partsBinary.get(2);
+        }
     }
 
     public void printConversion() {
         System.out.print(originalInstructionText);
         System.out.print("   ->   ");
         System.out.println(binaryInstruction);
+    }
+
+    public String getOriginalInstructionText() {
+        return originalInstructionText;
+    }
+
+    public String getBinaryInstruction() {
+        return binaryInstruction;
     }
 }

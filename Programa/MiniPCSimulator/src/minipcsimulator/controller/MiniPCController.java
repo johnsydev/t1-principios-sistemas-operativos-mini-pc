@@ -8,12 +8,15 @@ import minipcsimulator.gui.VentanaPrincipal;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import minipcsimulator.services.FileManager;
 import minipcsimulator.services.AsmParser;
 import minipcsimulator.services.BinaryUtils;
 
 import minipcsimulator.model.Instruction;
+import minipcsimulator.model.Loader;
+import minipcsimulator.model.MainMemory;
 
 /**
  *
@@ -66,13 +69,12 @@ public class MiniPCController {
 
         System.out.println("Archivo cargado y verificado correctamente.");
         System.out.println(asmArray);
-        
-        int i = 0;
-        for (String line : lines) {
-            if (line.trim().isEmpty()) continue;
-            Instruction instruction = new Instruction(line, asmArray.get(i), BinaryUtils.translateToBinary(asmArray.get(i)));
-            instruction.printConversion();
-            i++;
-        }
+
+        MainMemory memory = new MainMemory();
+        Loader loader = new Loader(memory);
+        List<Object[]> loadedProgramInstructions = loader.loadProgram(lines, asmArray);
+
+        vista.actualizarTablaInstrucciones(loadedProgramInstructions);
+        vista.actualizarTablaMemoria(memory.getAllMemoryRows());
     }
 }
