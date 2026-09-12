@@ -13,6 +13,8 @@ import minipcsimulator.services.FileManager;
 import minipcsimulator.services.AsmParser;
 import minipcsimulator.services.BinaryUtils;
 
+import minipcsimulator.model.Instruction;
+
 /**
  *
  * @author johns
@@ -68,9 +70,8 @@ public class MiniPCController {
         int i = 0;
         for (String line : lines) {
             if (line.trim().isEmpty()) continue;
-            System.out.print(line);
-            System.out.print("   ->   ");
-            System.out.println(BinaryUtils.translateToBinary(asmArray.get(i)));
+            Instruction instruction = new Instruction(line, asmArray.get(i), BinaryUtils.translateToBinary(asmArray.get(i)));
+            instruction.printConversion();
             i++;
         }
     }
