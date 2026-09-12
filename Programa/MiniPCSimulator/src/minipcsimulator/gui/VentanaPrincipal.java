@@ -27,7 +27,7 @@ public class VentanaPrincipal extends JFrame {
     private static final Color ORANGE = new Color(235, 160, 65);
 
     // Componentes de la interfaz
-    private JButton btnCargar, btnPasoAPaso, btnEjecutar, btnLimpiar;
+    private JButton btnSeleccionar, btnCargar, btnPasoAPaso, btnEjecutar, btnLimpiar;
     private JSpinner spTamanoMemoria, spLimiteKernel;
     private JButton btnAplicarConfig;
     private JTable tablaInstrucciones;
@@ -123,11 +123,14 @@ public class VentanaPrincipal extends JFrame {
         panelPrincipal.add(titulo);
         panelPrincipal.add(Box.createVerticalStrut(14));
 
-        btnCargar = crearBoton("Cargar archivo .asm", BLUE);
+        btnSeleccionar = crearBoton("Seleccionar archivo .asm", BLUE);
+        btnCargar = crearBoton("Cargar programa", ORANGE);
         btnPasoAPaso = crearBoton("Paso a paso", CYAN);
         btnEjecutar = crearBoton("Ejecutar todo", GREEN);
         btnLimpiar = crearBoton("Limpiar / Reset", RED);
 
+        panelPrincipal.add(btnSeleccionar);
+        panelPrincipal.add(Box.createVerticalStrut(8));
         panelPrincipal.add(btnCargar);
         panelPrincipal.add(Box.createVerticalStrut(8));
         panelPrincipal.add(btnPasoAPaso);
@@ -506,6 +509,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
     // Getters y Setters
+    public JButton getBtnSeleccionar() { return btnSeleccionar; }
     public JButton getBtnCargar() { return btnCargar; }
     public JButton getBtnPasoAPaso() { return btnPasoAPaso; }
     public JButton getBtnEjecutar() { return btnEjecutar; }
