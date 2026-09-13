@@ -23,6 +23,7 @@ import minipcsimulator.model.CPU;
 import minipcsimulator.model.Dispatcher;
 import minipcsimulator.model.PCB;
 import minipcsimulator.model.MemoryRegister;
+import minipcsimulator.utils.SystemConstants;
 
 /**
  *
@@ -71,6 +72,13 @@ public class MiniPCController {
                 ejecutarPasoAPaso();
             }
         });
+
+        vista.getBtnEjecutar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ejecutarTodoPrograma();
+            }
+        });
     }
     
     public void actualizarVista() {
@@ -116,9 +124,10 @@ public class MiniPCController {
             listProcessMemory.set(zeroIndex, assignedId); // si hay procesos terminados, se reemplaza el primero
         }
 
-        this.process = new Process(assignedId);
+        this.process = new Process(assignedId, SystemConstants.USER_MEMORY_START_DEFAULT);
         List<Object[]> loadedProgramInstructions = Loader.loadProgram(lines, asmArray, this.process);
 
+        vista.deshabilitarConfiguraciones();
         vista.actualizarTablaInstrucciones(loadedProgramInstructions);
     }
 
@@ -138,25 +147,32 @@ public class MiniPCController {
         vista.actualizarTablaMemoria(memoryRows);
     }
 
+    private boolean validarParaEjecutar() {
+        if (this.process == null) {
+            vista.mostrarError("No hay un programa cargado. Seleccione un archivo .asm primero.");
+            return false;
+        }
+        else if (this.process.getPCB().getState() == ProcessState.EXIT) {
+            vista.mostrarError("El proceso ya ha terminado. Seleccione un nuevo archivo .asm para cargar otro programa.");
+            return false;
+        }
+        else if (this.process.getPCB().getState() == ProcessState.NEW) {
+            vista.mostrarError("El proceso aún no ha sido cargado en memoria. Cargue el programa primero.");
+            return false;
+        }
+        else if (this.process.getPCB().getState() == ProcessState.BLOCKED) {
+            vista.mostrarError("El proceso está bloqueado. No se puede ejecutar hasta que se desbloquee.");
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Esto ejecuta el programa paso a paso, actualizando la vista de la memoria y el estado del proceso.
      * Estado del proceso RUNNING
      */
     private void ejecutarPasoAPaso() {
-        if (this.process == null) {
-            vista.mostrarError("No hay un programa cargado. Seleccione un archivo .asm primero.");
-            return;
-        }
-        else if (this.process.getPCB().getState() == ProcessState.EXIT) {
-            vista.mostrarError("El proceso ya ha terminado. Seleccione un nuevo archivo .asm para cargar otro programa.");
-            return;
-        }
-        else if (this.process.getPCB().getState() == ProcessState.NEW) {
-            vista.mostrarError("El proceso aún no ha sido cargado en memoria. Cargue el programa primero.");
-            return;
-        }
-        else if (this.process.getPCB().getState() == ProcessState.BLOCKED) {
-            vista.mostrarError("El proceso está bloqueado. No se puede ejecutar hasta que se desbloquee.");
+        if (!validarParaEjecutar()) {
             return;
         }
 
@@ -175,7 +191,16 @@ public class MiniPCController {
         vista.actualizarTablaMemoria(memoryRows);
     }
 
-    public void saveRegistersIntoMemory() {
+    private void ejecutarTodoPrograma() {
+        if (!validarParaEjecutar()) {
+            return;
+        }
+        while (this.process.getPCB().getState() != ProcessState.EXIT) {
+            ejecutarPasoAPaso();
+        }
+    }
+
+    private void saveRegistersIntoMemory() {
         PCB pcb = this.process.getPCB();
         pcb.setPC(this.cpu.getPC());
         pcb.setAC(this.cpu.getAC());
@@ -195,5 +220,13 @@ public class MiniPCController {
         memory.setPosition(memoryPosition+5, new MemoryRegister("bcp_bx", pcb.getBX()));
         memory.setPosition(memoryPosition+6, new MemoryRegister("bcp_cx", pcb.getCX()));
         memory.setPosition(memoryPosition+7, new MemoryRegister("bcp_dx", pcb.getDX()));
+
+        vista.setPC(pcb.getPC());
+        vista.setIR(cpu.getIR());
+        vista.setAC(pcb.getAC());
+        vista.setAX(pcb.getAX());
+        vista.setBX(pcb.getBX());
+        vista.setCX(pcb.getCX());
+        vista.setDX(pcb.getDX());
     }
 }

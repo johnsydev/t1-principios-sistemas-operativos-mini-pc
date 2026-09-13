@@ -8,13 +8,14 @@ public class Process {
     private PCB pcb;
 
     // al iniciar el proceso
-    public Process(int id) {
+    public Process(int id, int startPosition) {
         this.instructions = new ArrayList<>(); //vacía esperando a Loader
-        this.pcb = new PCB(id);
+        this.pcb = new PCB(id, startPosition);
     }
 
     public void setInstructions(ArrayList<Instruction> instructions) {
         this.instructions = instructions;
+        this.pcb.configEndPosition(instructions.size());
     }
 
     public ArrayList<Instruction> getInstructions() {

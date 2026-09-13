@@ -12,6 +12,8 @@ public class PCB {
     }
 
     private int memoryPosition;
+    private int startPosition;
+    private int endPosition;
     
     
     private int PID = 0;
@@ -26,10 +28,24 @@ public class PCB {
     private int DX = 0;
     
     // al iniciar el proceso
-    public PCB(int id) {
+    public PCB(int id, int startPosition) {
         this.PID = 100+id;                                                       // 4 es el tamaño fijo de PCB + cantidad de registros
+        this.startPosition = startPosition;
         this.memoryPosition = (SystemConstants.KERNEL_MEMORY_START_DEFAULT + (id-1)) * (4 + SystemConstants.REGISTERS_COUNT);
         this.state = ProcessState.NEW;
+        this.PC = startPosition;
+    }
+
+    public void configEndPosition(int instructionsCount) {
+        this.endPosition = startPosition + instructionsCount;
+    }
+
+    public int getStartPosition() {
+        return startPosition;
+    }
+
+    public int getEndPosition() {
+        return endPosition;
     }
 
     public int getPID() {

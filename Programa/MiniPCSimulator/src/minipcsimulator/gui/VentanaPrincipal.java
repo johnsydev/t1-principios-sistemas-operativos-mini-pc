@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -525,11 +526,11 @@ public class VentanaPrincipal extends JFrame {
     public JTable getTablaMemoria() { return tablaMemoria; }
 
     public void setEstadoBCP(String estado) { lblEstadoBCP.setText("ESTADO: " + estado); }
-    public void setPC(String valor) { txtPC.setText(valor); }
+    public void setPC(int valor) { txtPC.setText(String.valueOf(valor)); }
     public void setIR(String valor) { txtIR.setText(valor); }
-    public void setAC(String valor) { txtAC.setText(valor); }
-    public void setAX(String valor) { txtAX.setText(valor); }
-    public void setBX(String valor) { txtBX.setText(valor); }
-    public void setCX(String valor) { txtCX.setText(valor); }
-    public void setDX(String valor) { txtDX.setText(valor); }
+    public void setAC(int valor) { txtAC.setText(String.valueOf(valor)); }
+    public void setAX(int valor) { txtAX.setText(String.valueOf(valor)); }
+    public void setBX(int valor) { txtBX.setText(String.valueOf(valor)); }
+    public void setCX(int valor) { txtCX.setText(String.valueOf(valor)); }
+    public void setDX(int valor) { txtDX.setText(String.valueOf(valor)); }
 }

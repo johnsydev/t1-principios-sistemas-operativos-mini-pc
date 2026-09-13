@@ -1,32 +1,37 @@
 package minipcsimulator.services;
 
 import java.util.ArrayList;
-
 import minipcsimulator.utils.SystemConstants;
 
 public class BinaryUtils {
     public enum BinaryCodes {
-        LOAD("0001", 1), 
-        STORE("0010", 2), 
-        ADD("0101", 3), 
-        SUB("0100", 4), 
-        MOV("0011", 5),
+        LOAD("0001", 1, "INSTRUCTION"), 
+        STORE("0010", 2, "INSTRUCTION"), 
+        ADD("0101", 3, "INSTRUCTION"), 
+        SUB("0100", 4, "INSTRUCTION"), 
+        MOV("0011", 5, "INSTRUCTION"),
 
-        AX("0001", 5),
-        BX("0010", 6),
-        CX("0011", 7),
-        DX("0100", 8);
+        AX("0001", 5, "REGISTER"),
+        BX("0010", 6, "REGISTER"),
+        CX("0011", 7, "REGISTER"),
+        DX("0100", 8, "REGISTER");
 
         private final String binaryCode;
         private final int id;
+        private final String type;
 
-        BinaryCodes(String binaryCode, int id) {
+        BinaryCodes(String binaryCode, int id, String type) {
             this.binaryCode = binaryCode;
             this.id = id;
+            this.type = type;
         }
 
         public String getBinaryCode() {
             return binaryCode;
+        }
+
+        public String getType() {
+            return type;
         }
 
         // Con esto se puede acceder al código binario de las instrucciones y registros
@@ -36,6 +41,15 @@ public class BinaryUtils {
             } catch (Exception e) {
                 return null;
             }
+        }
+
+        public static BinaryCodes getByBinaryCode(String code, String type) {
+            for (BinaryCodes codes : values()) {
+                if (codes.binaryCode.equals(code) && codes.type.equals(type)) {
+                    return codes;
+                }
+            }
+            return null;
         }
     }
 
@@ -55,6 +69,22 @@ public class BinaryUtils {
         }
 
         return bitSigno + binarioValor;
+    }
+
+    public static int binaryToNumber(String binary) {
+        if (binary.length() != SystemConstants.REGISTER_VALUE_SIZE) {
+            throw new IllegalArgumentException("El binario debe tener una longitud de " + SystemConstants.REGISTER_VALUE_SIZE);
+        }
+
+        char bitSign = binary.charAt(0);
+        String binaryValue = binary.substring(1);
+
+        int number = Integer.parseInt(binaryValue, 2);
+        if (bitSign == '1') {
+            number = -number; 
+        }
+
+        return number;
     }
 
     public static String translateToBinary(ArrayList<String> instructionParts) {

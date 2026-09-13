@@ -38,6 +38,14 @@ public class MainMemory {
         return memory[address];
     }
 
+    public Instruction getInstruction(int address) {
+        MemoryRegister memReg = memory[address];
+        if (memReg != null) {
+            return memReg.instruction;
+        }
+        return null;
+    }
+
     public List<Object[]> getAllMemoryRows() {
         List<Object[]> memoryList = new ArrayList<>();
         int i = 0;

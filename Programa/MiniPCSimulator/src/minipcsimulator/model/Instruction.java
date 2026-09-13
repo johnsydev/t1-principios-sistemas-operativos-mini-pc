@@ -40,4 +40,17 @@ public class Instruction {
     public String getBinaryInstruction() {
         return binaryInstruction;
     }
+
+    // Getters (En binario)
+    public String getInstructionType() {
+        return instructionType;
+    }
+
+    public String getRegister() {
+        return register;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }
