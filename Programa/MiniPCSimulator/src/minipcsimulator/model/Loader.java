@@ -1,11 +1,9 @@
 package minipcsimulator.model;
 
-import minipcsimulator.services.BinaryUtils;
-import minipcsimulator.utils.SystemConstants;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import minipcsimulator.services.BinaryUtils;
+import minipcsimulator.utils.SystemConstants;
 
 public class Loader {
 
@@ -32,9 +30,9 @@ public class Loader {
         ArrayList<Instruction> instructions = process.getInstructions();
         int position = SystemConstants.USER_MEMORY_START_DEFAULT;
         for (Instruction instruction : instructions) {
-            memory.setPosition(position, instruction);
+            memory.setPositionInstruction(position, instruction);
             position++;
         }
-        process.setState(Process.ProcessState.READY);
+        process.getPCB().setState(PCB.ProcessState.READY);
     }
 }

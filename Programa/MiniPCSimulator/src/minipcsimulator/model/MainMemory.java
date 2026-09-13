@@ -6,14 +6,18 @@ import minipcsimulator.utils.SystemConstants;
 
 public class MainMemory {
     
-    private Instruction[] memory;
+    private MemoryRegister[] memory;
     
     /**
      * Constructor de la clase MainMemory.
      * Inicia la memoria principal con un arreglo de instrucciones vacías con el tamaño especificado.
      */
     public MainMemory() { 
-        memory = new Instruction[SystemConstants.MEMORY_SIZE];
+        memory = new MemoryRegister[SystemConstants.MEMORY_SIZE];
+    }
+
+    public void setPosition(int address, MemoryRegister register) {
+        memory[address] = register;
     }
 
     /**
@@ -21,27 +25,49 @@ public class MainMemory {
      * @param address La posición de memoria donde se almacenará la instrucción.
      * @param instruction El objeto Instruction que se almacenará en la memoria.
      */
-    public void setPosition(int address, Instruction instruction) {
-        memory[address] = instruction;
+    public void setPositionInstruction(int address, Instruction instruction) {
+        memory[address] = new MemoryRegister(instruction);
     }
 
     /**
      * Función para recuperar una instrucción de la memoria principal.
      * @param address La posición de memoria desde donde se recuperará la instrucción.
-     * @return El objeto Instruction almacenado en la posición de memoria especificada.
+     * @return El objeto MemoryRegister almacenado en la posición de memoria especificada.
      */
-    public Instruction getPosition(int address) {
+    public MemoryRegister getPosition(int address) {
         return memory[address];
     }
 
     public List<Object[]> getAllMemoryRows() {
         List<Object[]> memoryList = new ArrayList<>();
         int i = 0;
-        for (Instruction instruction : memory) {
-            if (instruction != null) {
-                memoryList.add(new Object[] {i, instruction.getOriginalInstructionText(), instruction.getBinaryInstruction()});
+        int countPauseKernelStart = -1;
+        for (MemoryRegister memr : memory) {
+            if (memr == null) {
+                
+                if (i < SystemConstants.USER_MEMORY_START_DEFAULT) {
+                    if (countPauseKernelStart == -1) {
+                        countPauseKernelStart = i;
+                    }
+                }
+                else {
+                    if (countPauseKernelStart != -1) {
+                        memoryList.add(new Object[] {countPauseKernelStart + " - " + (i - 1), "Kernel reservado", null});
+                        countPauseKernelStart = -1;
+                    }
+                    memoryList.add(new Object[] {i, null, null});
+                }
+                i++;
+                continue;
+            }
+            if (countPauseKernelStart != -1) {
+                memoryList.add(new Object[] {countPauseKernelStart + "..." + (i - 1), "Kernel reservado", null});
+                countPauseKernelStart = -1;
+            }
+            if (memr.instruction != null) {
+                memoryList.add(new Object[] {i, memr.instruction.getOriginalInstructionText(), memr.instruction.getBinaryInstruction()});
             } else {
-                memoryList.add(new Object[] {i, null, null});
+                memoryList.add(new Object[] {i, memr.getName(), memr.getBinaryValue()});
             }
             i++;
         }

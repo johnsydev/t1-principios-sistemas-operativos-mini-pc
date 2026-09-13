@@ -18,6 +18,11 @@ import minipcsimulator.model.Instruction;
 import minipcsimulator.model.Loader;
 import minipcsimulator.model.MainMemory;
 import minipcsimulator.model.Process;
+import minipcsimulator.model.PCB.ProcessState;
+import minipcsimulator.model.CPU;
+import minipcsimulator.model.Dispatcher;
+import minipcsimulator.model.PCB;
+import minipcsimulator.model.MemoryRegister;
 
 /**
  *
@@ -28,9 +33,15 @@ public class MiniPCController {
     private VentanaPrincipal vista;
     private MainMemory memory;
     private Process process;
+    private CPU cpu;
+    private ArrayList<Integer> listProcessMemory = new ArrayList<>();
+    // lista de procesos: [1, 0, 3, ...], los procesos en 0 terminaron y se pueden reemplazar
+    // los que tienen número ese es su ID
 
     public MiniPCController() {
         this.vista = new VentanaPrincipal();
+        this.memory = new MainMemory();
+        this.cpu = new CPU(this.memory);
 
         actualizarVista();
         agregarListeners();
@@ -93,7 +104,19 @@ public class MiniPCController {
         System.out.println(asmArray);
 
         // Aquí se hace el proceso y las instrucciones se cargan, sin RAM aún
-        this.process = new Process();
+
+        int zeroIndex = listProcessMemory.indexOf(0); 
+        int assignedId;
+
+        if (zeroIndex == -1) { // si no hay procesos terminados, se asigna un nuevo ID
+            assignedId = listProcessMemory.size() + 1; 
+            listProcessMemory.add(assignedId);
+        } else {
+            assignedId = zeroIndex + 1;
+            listProcessMemory.set(zeroIndex, assignedId); // si hay procesos terminados, se reemplaza el primero
+        }
+
+        this.process = new Process(assignedId);
         List<Object[]> loadedProgramInstructions = Loader.loadProgram(lines, asmArray, this.process);
 
         vista.actualizarTablaInstrucciones(loadedProgramInstructions);
@@ -109,8 +132,6 @@ public class MiniPCController {
             return;
         }
 
-        // Aquí se carga el programa en la memoria principal (RAM)
-        this.memory = new MainMemory();
         Loader.loadToMemory(this.process, this.memory);
 
         List<Object[]> memoryRows = this.memory.getAllMemoryRows();
@@ -122,11 +143,57 @@ public class MiniPCController {
      * Estado del proceso RUNNING
      */
     private void ejecutarPasoAPaso() {
-        this.process.setState(Process.ProcessState.RUNNING);
+        if (this.process == null) {
+            vista.mostrarError("No hay un programa cargado. Seleccione un archivo .asm primero.");
+            return;
+        }
+        else if (this.process.getPCB().getState() == ProcessState.EXIT) {
+            vista.mostrarError("El proceso ya ha terminado. Seleccione un nuevo archivo .asm para cargar otro programa.");
+            return;
+        }
+        else if (this.process.getPCB().getState() == ProcessState.NEW) {
+            vista.mostrarError("El proceso aún no ha sido cargado en memoria. Cargue el programa primero.");
+            return;
+        }
+        else if (this.process.getPCB().getState() == ProcessState.BLOCKED) {
+            vista.mostrarError("El proceso está bloqueado. No se puede ejecutar hasta que se desbloquee.");
+            return;
+        }
 
+        // Si el proceso es válido, vamos a ejecutarlo.
+
+        // Para ejecutar primer paso se debe llamar al dispatcher
+        if (this.process.getPCB().getState() == ProcessState.READY) {
+            Dispatcher.dispatch(this.process, this.cpu);
+        }
+
+        // Ejecutar la instrucción actual
+        this.cpu.executeInstruction();
+
+        saveRegistersIntoMemory();
+        List<Object[]> memoryRows = this.memory.getAllMemoryRows();
+        vista.actualizarTablaMemoria(memoryRows);
+    }
+
+    public void saveRegistersIntoMemory() {
+        PCB pcb = this.process.getPCB();
+        pcb.setPC(this.cpu.getPC());
+        pcb.setAC(this.cpu.getAC());
+        pcb.setAX(this.cpu.getAX());
+        pcb.setBX(this.cpu.getBX());
+        pcb.setCX(this.cpu.getCX());
+        pcb.setDX(this.cpu.getDX());
         
-        
-        vista.actualizarTablaMemoria(this.memory.getAllMemoryRows());
-        vista.setEstadoBCP(this.process.getState().toString());
+        // pos memoria BCP
+        int memoryPosition = pcb.getMemoryPosition();
+        System.out.println("Guardando registros en memoria en la posición: " + memoryPosition);
+        memory.setPosition(memoryPosition, new MemoryRegister("bcp_pid", pcb.getPID()));
+        memory.setPosition(memoryPosition+1, new MemoryRegister("bcp_state", pcb.getState().ordinal()));
+        memory.setPosition(memoryPosition+2, new MemoryRegister("bcp_pc", pcb.getPC()));
+        memory.setPosition(memoryPosition+3, new MemoryRegister("bcp_ac", pcb.getAC()));
+        memory.setPosition(memoryPosition+4, new MemoryRegister("bcp_ax", pcb.getAX()));
+        memory.setPosition(memoryPosition+5, new MemoryRegister("bcp_bx", pcb.getBX()));
+        memory.setPosition(memoryPosition+6, new MemoryRegister("bcp_cx", pcb.getCX()));
+        memory.setPosition(memoryPosition+7, new MemoryRegister("bcp_dx", pcb.getDX()));
     }
 }

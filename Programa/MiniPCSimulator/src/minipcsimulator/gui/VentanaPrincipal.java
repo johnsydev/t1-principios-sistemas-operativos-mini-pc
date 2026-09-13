@@ -219,7 +219,7 @@ public class VentanaPrincipal extends JFrame {
         JPanel encabezadoRAM = crearEncabezadoSeccion("MEMORIA PRINCIPAL", "RAM");
         cardRAM.add(encabezadoRAM, BorderLayout.NORTH);
 
-        String[] colsMem = {"Posición", "Instrucción ASM", "Valor en Memoria"};
+        String[] colsMem = {"Posición", "Instrucción", "Valor en Memoria"};
         modeloTablaMemoria = new DefaultTableModel(colsMem, 0);
         tablaMemoria = crearTabla(modeloTablaMemoria);
 
