@@ -161,6 +161,8 @@ public class MiniPCController {
         this.process = new Process(assignedId, SystemConfig.getUserMemoryStart());
         List<Object[]> loadedProgramInstructions = Loader.loadProgram(lines, asmArray, this.process);
 
+        this.process.getPCB().setState(PCB.ProcessState.READY);
+
         vista.deshabilitarConfiguraciones();
         vista.actualizarTablaInstrucciones(loadedProgramInstructions);
     }

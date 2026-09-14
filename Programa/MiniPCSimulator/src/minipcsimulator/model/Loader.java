@@ -53,6 +53,5 @@ public class Loader {
             memory.setPositionInstruction(position, instruction);
             position++;
         }
-        process.getPCB().setState(PCB.ProcessState.READY);
     }
 }
