@@ -1,11 +1,15 @@
 
 # Mini PC Simulator
 
+<p align="left">
+  <img src="https://res.cloudinary.com/dpuuo4mfh/image/upload/v1789406034/simulatorimgt1so_f9lchv.png" width="1000" alt="Vista previa del simulador">
+</p>
+
 ## Información del proyecto
 
 **Estudiante:** 2024178835 - Johnsy Steven López Aguilar  
 **Curso:** Principios de Sistemas Operativos  
-**Estado del proyecto:** 1 (Completo)
+**Estado del proyecto:** 1 (Completo)  
 **Enlace del video:** 
 
 ---
