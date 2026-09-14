@@ -20,6 +20,7 @@ import minipcsimulator.model.Process;
 import minipcsimulator.services.AsmParser;
 import minipcsimulator.services.FileManager;
 import minipcsimulator.utils.SystemConfig;
+import minipcsimulator.services.BinaryUtils;
 
 /**
  * Clase MiniPCController que actúa como Kernel del sistema simulado.
@@ -272,25 +273,36 @@ public class MiniPCController {
         pcb.setBX(this.cpu.getBX());
         pcb.setCX(this.cpu.getCX());
         pcb.setDX(this.cpu.getDX());
-        
+
+        int pid = pcb.getPID();
+        String state = pcb.getState().toString();
+        int pc = pcb.getPC();
+        int ac = pcb.getAC();
+        int ax = pcb.getAX();
+        int bx = pcb.getBX();
+        int cx = pcb.getCX();
+        int dx = pcb.getDX();
+
         // pos memoria BCP
         int memoryPosition = pcb.getMemoryPosition();
-        memory.setPosition(memoryPosition, new MemoryRegister("bcp_pid", pcb.getPID()));
-        memory.setPosition(memoryPosition+1, new MemoryRegister("bcp_state", pcb.getState().ordinal()));
-        memory.setPosition(memoryPosition+2, new MemoryRegister("bcp_pc", pcb.getPC()));
-        memory.setPosition(memoryPosition+3, new MemoryRegister("bcp_ac", pcb.getAC()));
-        memory.setPosition(memoryPosition+4, new MemoryRegister("bcp_ax", pcb.getAX()));
-        memory.setPosition(memoryPosition+5, new MemoryRegister("bcp_bx", pcb.getBX()));
-        memory.setPosition(memoryPosition+6, new MemoryRegister("bcp_cx", pcb.getCX()));
-        memory.setPosition(memoryPosition+7, new MemoryRegister("bcp_dx", pcb.getDX()));
+        memory.setPosition(memoryPosition, new MemoryRegister("bcp_pid = " + pid, pid));
+        memory.setPosition(memoryPosition+1, new MemoryRegister("bcp_state = " + state, pcb.getState().ordinal()));
+        memory.setPosition(memoryPosition+2, new MemoryRegister("bcp_pc = " + pc, pc));
+        memory.setPosition(memoryPosition+3, new MemoryRegister("bcp_ac = " + ac, ac));
+        memory.setPosition(memoryPosition+4, new MemoryRegister("bcp_ax = " + ax, ax));
+        memory.setPosition(memoryPosition+5, new MemoryRegister("bcp_bx = " + bx, bx));
+        memory.setPosition(memoryPosition+6, new MemoryRegister("bcp_cx = " + cx, cx));
+        memory.setPosition(memoryPosition+7, new MemoryRegister("bcp_dx = " + dx, dx));
+        
+        vista.setEstadoBCP(state);
 
-        vista.setPC(pcb.getPC());
+        vista.setPC(pc);
         vista.setIR(cpu.getIR());
-        vista.setAC(pcb.getAC());
-        vista.setAX(pcb.getAX());
-        vista.setBX(pcb.getBX());
-        vista.setCX(pcb.getCX());
-        vista.setDX(pcb.getDX());
+        vista.setAC(ac);
+        vista.setAX(ax);
+        vista.setBX(bx);
+        vista.setCX(cx);
+        vista.setDX(dx);
     }
 
 

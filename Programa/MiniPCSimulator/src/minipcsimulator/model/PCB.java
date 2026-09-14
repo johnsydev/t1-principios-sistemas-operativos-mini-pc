@@ -9,11 +9,22 @@ public class PCB {
 
     // Estados del proceso posibles
     public enum ProcessState {
-        NEW, //al seleccionar el archivo
-        READY, //al cargar el programa a memoria
-        RUNNING, //al ejecutarlo
-        BLOCKED, //esperando IO
-        EXIT //al terminar de ejecutarse
+        NEW("NEW"), //al seleccionar el archivo
+        READY("READY"), //al cargar el programa a memoria
+        RUNNING("RUNNING"), //al ejecutarlo
+        BLOCKED("BLOCKED"), //esperando IO
+        EXIT("EXIT"); //al terminar de ejecutarse
+
+        private final String displayName;
+
+        ProcessState(String displayName) {
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String toString() {
+            return displayName;
+        }
     }
 
     // Posiciones en memoria

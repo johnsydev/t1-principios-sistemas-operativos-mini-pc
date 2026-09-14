@@ -246,7 +246,7 @@ public class VentanaPrincipal extends JFrame {
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
         panelPrincipal.setBackground(BG_PANEL);
         panelPrincipal.setBorder(new EmptyBorder(16, 14, 16, 14));
-        panelPrincipal.setPreferredSize(new Dimension(285, 0));
+        panelPrincipal.setPreferredSize(new Dimension(330, 0));
 
         JLabel titulo = crearTitulo("PROCESO");
         panelPrincipal.add(titulo);
