@@ -7,7 +7,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
-import java.util.stream.Stream;
 
 import minipcsimulator.utils.SystemConfig;
 
@@ -86,7 +85,7 @@ public class VentanaPrincipal extends JFrame {
         titulo.setForeground(TEXT);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 22));
 
-        JLabel subtitulo = new JLabel("Principios de Sistemas Operativos");
+        JLabel subtitulo = new JLabel("Tarea 1 - Principios de Sistemas Operativos");
         subtitulo.setForeground(TEXT_SECONDARY);
         subtitulo.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
@@ -97,15 +96,10 @@ public class VentanaPrincipal extends JFrame {
         JPanel estadoPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 10));
         estadoPanel.setOpaque(false);
 
-        JLabel punto = new JLabel("●");
-        punto.setForeground(GREEN);
-        punto.setFont(new Font("SansSerif", Font.BOLD, 15));
-
-        JLabel estado = new JLabel("SIMULADOR LISTO");
+        JLabel estado = new JLabel("VERSIÓN 1.0");
         estado.setForeground(TEXT_SECONDARY);
         estado.setFont(new Font("SansSerif", Font.BOLD, 12));
 
-        estadoPanel.add(punto);
         estadoPanel.add(estado);
 
         header.add(tituloPanel, BorderLayout.WEST);
@@ -130,7 +124,7 @@ public class VentanaPrincipal extends JFrame {
         btnCargar = crearBoton("Cargar programa", ORANGE);
         btnPasoAPaso = crearBoton("Paso a paso", CYAN);
         btnEjecutar = crearBoton("Ejecutar todo", GREEN);
-        btnLimpiar = crearBoton("Limpiar / Reset", RED);
+        btnLimpiar = crearBoton("Limpiar sistema", RED);
 
         panelPrincipal.add(btnSeleccionar);
         panelPrincipal.add(Box.createVerticalStrut(8));
@@ -151,7 +145,7 @@ public class VentanaPrincipal extends JFrame {
         panelPrincipal.add(separador);
         panelPrincipal.add(Box.createVerticalStrut(18));
 
-        JLabel tituloRAM = crearTitulo("MEMORIA RAM");
+        JLabel tituloRAM = crearTitulo("MEMORIA PRINCIPAL");
         panelPrincipal.add(tituloRAM);
         panelPrincipal.add(Box.createVerticalStrut(14));
 
@@ -209,7 +203,12 @@ public class VentanaPrincipal extends JFrame {
         cardPrograma.add(encabezadoPrograma, BorderLayout.NORTH);
 
         String[] colsInst = {"Instrucción ASM", "Código Binario"};
-        modeloTablaInstrucciones = new DefaultTableModel(colsInst, 0);
+        modeloTablaInstrucciones = new DefaultTableModel(colsInst, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         tablaInstrucciones = crearTabla(modeloTablaInstrucciones);
 
         JScrollPane scrollInstrucciones = new JScrollPane(tablaInstrucciones);
@@ -223,7 +222,12 @@ public class VentanaPrincipal extends JFrame {
         cardRAM.add(encabezadoRAM, BorderLayout.NORTH);
 
         String[] colsMem = {"Posición", "Instrucción", "Valor en Memoria"};
-        modeloTablaMemoria = new DefaultTableModel(colsMem, 0);
+        modeloTablaMemoria = new DefaultTableModel(colsMem, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         tablaMemoria = crearTabla(modeloTablaMemoria);
 
         JScrollPane scrollMemoria = new JScrollPane(tablaMemoria);
@@ -251,7 +255,7 @@ public class VentanaPrincipal extends JFrame {
         JPanel cardProceso = crearCard();
         cardProceso.setLayout(new BorderLayout(8, 8));
 
-        lblProcessID = new JLabel("PID 101");
+        lblProcessID = new JLabel("Sin proceso cargado");
         lblProcessID.setForeground(TEXT);
         lblProcessID.setFont(new Font("SansSerif", Font.BOLD, 17));
 
@@ -376,7 +380,7 @@ public class VentanaPrincipal extends JFrame {
         );
     }
 
-    // Configura y crea una tabla personalizada
+    // Configura y crea una tabla estándar con filas alternas
     private JTable crearTabla(DefaultTableModel modelo) {
         JTable tabla = new JTable(modelo);
         tabla.setRowHeight(30);
@@ -384,7 +388,7 @@ public class VentanaPrincipal extends JFrame {
         tabla.setIntercellSpacing(new Dimension(0, 0));
         tabla.setBackground(BG_CARD);
         tabla.setForeground(TEXT);
-        tabla.setSelectionBackground(new Color(45, 75, 105));
+        tabla.setSelectionBackground(new Color(45, 90, 140)); // Color de selección (azul claro)
         tabla.setSelectionForeground(Color.WHITE);
         tabla.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
@@ -489,45 +493,75 @@ public class VentanaPrincipal extends JFrame {
         );
     }
 
+    public void mostrarInfo(String mensaje) {
+        JOptionPane.showMessageDialog(
+                this,
+                mensaje,
+                "Información",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
     /**
      * Actualiza la tabla de instrucciones limpiando los datos previos e ingresando nuevos.
-     * @param listaInstrucciones Una lista de arreglos de objetos (o strings) donde cada posición es una columna: [Instrucción ASM, Código Binario]
+     * @param listaInstrucciones Una lista de arreglos de objetos donde cada posición es una columna: [Instrucción ASM, Código Binario]
      */
     public void actualizarTablaInstrucciones(List<Object[]> listaInstrucciones) {
-        modeloTablaInstrucciones.setRowCount(0); // Borra las filas anteriores
+        modeloTablaInstrucciones.setRowCount(0);
         for (Object[] fila : listaInstrucciones) {
             modeloTablaInstrucciones.addRow(fila);
         }
     }
 
     /**
-     * Actualiza la tabla de memoria RAM limpiando los datos previos e ingresando nuevos.
+     * Actualiza la tabla de memoria RAM, ingresa los datos y selecciona/resalta automáticamente la fila indicada.
      * @param listaMemoria Una lista de arreglos de objetos donde cada posición es: [Posición, Instrucción ASM, Valor en Memoria]
+     * @param indiceResaltado El índice de la fila que se desea seleccionar (-1 para limpiar la selección)
      */
-    public void actualizarTablaMemoria(List<Object[]> listaMemoria) {
-        modeloTablaMemoria.setRowCount(0); // Borra las filas anteriores
+    public void actualizarTablaMemoria(List<Object[]> listaMemoria, int indiceResaltado) {
+        modeloTablaMemoria.setRowCount(0);
         for (Object[] fila : listaMemoria) {
             modeloTablaMemoria.addRow(fila);
         }
+        
+        // Seleccionar la fila de forma nativa para que se pinte con el color de selección de la tabla
+        if (indiceResaltado >= 0 && indiceResaltado < tablaMemoria.getRowCount()) {
+            tablaMemoria.setRowSelectionInterval(indiceResaltado, indiceResaltado);
+            tablaMemoria.scrollRectToVisible(tablaMemoria.getCellRect(indiceResaltado, 0, true));
+        } else {
+            tablaMemoria.clearSelection();
+        }
     }
     
+    /**
+     * Deshabilita los controles de configuración de memoria y kernel para evitar cambios mientras un programa está cargado.
+     */
     public void deshabilitarConfiguraciones() {
         spTamanoMemoria.setEnabled(false);
         spLimiteKernel.setEnabled(false);
         btnAplicarConfig.setEnabled(false);
     }
 
+    /**
+     * Habilita los controles de configuración de memoria y kernel.
+     */
     public void habilitarConfiguraciones() {
         spTamanoMemoria.setEnabled(true);
         spLimiteKernel.setEnabled(true);
         btnAplicarConfig.setEnabled(true);
     }
 
+    /**
+     * Limpia la vista de la interfaz, reseteando las tablas y los registros del CPU a sus valores iniciales.
+     */
     public void limpiarVista() {
         modeloTablaInstrucciones.setRowCount(0);
         modeloTablaMemoria.setRowCount(0);
+        tablaMemoria.clearSelection();
         setEstadoBCP("ESPERANDO ARCHIVO");
+
         setPC(0);
+        lblProcessID.setText("Sin proceso cargado");
         setIR("0");
         setAC(0);
         setAX(0);
@@ -554,6 +588,7 @@ public class VentanaPrincipal extends JFrame {
 
     public void setEstadoBCP(String estado) { lblEstadoBCP.setText("ESTADO: " + estado); }
     public void setPC(int valor) { txtPC.setText(String.valueOf(valor)); }
+    public void setProcessID(int pid) { lblProcessID.setText("PID " + pid); }
     public void setIR(String valor) { txtIR.setText(valor); }
     public void setAC(int valor) { txtAC.setText(String.valueOf(valor)); }
     public void setAX(int valor) { txtAX.setText(String.valueOf(valor)); }

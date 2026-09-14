@@ -161,8 +161,10 @@ public class MiniPCController {
         this.process = new Process(assignedId, SystemConfig.getUserMemoryStart());
         List<Object[]> loadedProgramInstructions = Loader.loadProgram(lines, asmArray, this.process);
 
-        this.process.getPCB().setState(PCB.ProcessState.READY);
+        this.process.getPCB().setState(PCB.ProcessState.NEW);
+        vista.setEstadoBCP("NEW");
 
+        vista.setProcessID(this.process.getPCB().getPID());
         vista.deshabilitarConfiguraciones();
         vista.actualizarTablaInstrucciones(loadedProgramInstructions);
     }
@@ -179,8 +181,11 @@ public class MiniPCController {
 
         Loader.loadToMemory(this.process, this.memory);
 
+        this.process.getPCB().setState(PCB.ProcessState.READY);
+        vista.setEstadoBCP("READY");
+
         List<Object[]> memoryRows = this.memory.getAllMemoryRows();
-        vista.actualizarTablaMemoria(memoryRows);
+        vista.actualizarTablaMemoria(memoryRows, -1);
     }
 
     /**
@@ -194,6 +199,7 @@ public class MiniPCController {
             return false;
         }
         else if (this.process.getPCB().getState() == ProcessState.EXIT) {
+            vista.setEstadoBCP("EXIT");
             vista.mostrarError("El proceso ya ha terminado. Seleccione un nuevo archivo .asm para cargar otro programa.");
             return false;
         }
@@ -222,6 +228,7 @@ public class MiniPCController {
         // Para ejecutar primer paso se debe llamar al dispatcher
         if (this.process.getPCB().getState() == ProcessState.READY) {
             Dispatcher.dispatch(this.process, this.cpu);
+            vista.setEstadoBCP("RUNNING");
         }
 
         // Ejecutar la instrucción actual
@@ -229,7 +236,11 @@ public class MiniPCController {
 
         saveRegistersIntoMemory();
         List<Object[]> memoryRows = this.memory.getAllMemoryRows();
-        vista.actualizarTablaMemoria(memoryRows);
+        vista.actualizarTablaMemoria(memoryRows, this.cpu.getPC() - (SystemConfig.getUserMemoryStart()-8)); // el segundo parámetro es para resaltar instrucción actual en la tabla de memoria
+
+        if (this.process.getPCB().getState() == ProcessState.EXIT) {
+            validarParaEjecutar();
+        }
     }
 
     /**
@@ -245,6 +256,7 @@ public class MiniPCController {
         while (this.process.getPCB().getState() != ProcessState.EXIT) {
             ejecutarPasoAPaso();
         }
+        vista.setEstadoBCP("EXIT");
     }
 
     /**
@@ -263,7 +275,6 @@ public class MiniPCController {
         
         // pos memoria BCP
         int memoryPosition = pcb.getMemoryPosition();
-        System.out.println("Guardando registros en memoria en la posición: " + memoryPosition);
         memory.setPosition(memoryPosition, new MemoryRegister("bcp_pid", pcb.getPID()));
         memory.setPosition(memoryPosition+1, new MemoryRegister("bcp_state", pcb.getState().ordinal()));
         memory.setPosition(memoryPosition+2, new MemoryRegister("bcp_pc", pcb.getPC()));
@@ -309,6 +320,7 @@ public class MiniPCController {
         this.cpu = new CPU(this.memory); // ponemos cpu nueva
 
         System.out.println("Configuraciones aplicadas correctamente.");
+        vista.mostrarInfo("Configuraciones aplicadas correctamente.");
     }
 
     /**
@@ -326,5 +338,8 @@ public class MiniPCController {
 
         vista.limpiarVista();
         vista.habilitarConfiguraciones();
+
+        System.out.println("Sistema reiniciado correctamente.");
+        vista.mostrarInfo("Sistema reiniciado correctamente.");
     }
 }
