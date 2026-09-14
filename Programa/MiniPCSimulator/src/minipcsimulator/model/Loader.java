@@ -3,12 +3,11 @@ package minipcsimulator.model;
 import java.util.ArrayList;
 import java.util.List;
 import minipcsimulator.services.BinaryUtils;
-import minipcsimulator.utils.SystemConstants;
+import minipcsimulator.utils.SystemConfig;
 
 public class Loader {
 
     public static List<Object[]> loadProgram(ArrayList<String> lines, ArrayList<ArrayList<String>> asmArray, Process process) {
-        int position = SystemConstants.USER_MEMORY_START_DEFAULT;
         int i = 0;
         List<Object[]> loadedProgramInstructions = new ArrayList<>();
         ArrayList<Instruction> instructions = new ArrayList<>();
@@ -28,7 +27,7 @@ public class Loader {
 
     public static void loadToMemory(Process process, MainMemory memory) {
         ArrayList<Instruction> instructions = process.getInstructions();
-        int position = SystemConstants.USER_MEMORY_START_DEFAULT;
+        int position = SystemConfig.getUserMemoryStart();
         for (Instruction instruction : instructions) {
             memory.setPositionInstruction(position, instruction);
             position++;

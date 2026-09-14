@@ -1,7 +1,7 @@
 package minipcsimulator.services;
 
 import java.util.ArrayList;
-import minipcsimulator.utils.SystemConstants;
+import minipcsimulator.utils.SystemConfig;
 
 public class BinaryUtils {
     public enum BinaryCodes {
@@ -61,19 +61,19 @@ public class BinaryUtils {
         }
 
         String binarioValor = Integer.toBinaryString(number);
-        binarioValor = String.format("%" + (SystemConstants.REGISTER_VALUE_SIZE - 1) + "s", binarioValor).replace(' ', '0'); // rellenar
+        binarioValor = String.format("%" + (SystemConfig.REGISTER_VALUE_SIZE - 1) + "s", binarioValor).replace(' ', '0'); // rellenar
 
         // recortar num si es muy grande, solo se toman los 7 bits menos significativos
-        if (binarioValor.length() > SystemConstants.REGISTER_VALUE_SIZE - 1) {
-            binarioValor = binarioValor.substring(binarioValor.length() - (SystemConstants.REGISTER_VALUE_SIZE - 1));
+        if (binarioValor.length() > SystemConfig.REGISTER_VALUE_SIZE - 1) {
+            binarioValor = binarioValor.substring(binarioValor.length() - (SystemConfig.REGISTER_VALUE_SIZE - 1));
         }
 
         return bitSigno + binarioValor;
     }
 
     public static int binaryToNumber(String binary) {
-        if (binary.length() != SystemConstants.REGISTER_VALUE_SIZE) {
-            throw new IllegalArgumentException("El binario debe tener una longitud de " + SystemConstants.REGISTER_VALUE_SIZE);
+        if (binary.length() != SystemConfig.REGISTER_VALUE_SIZE) {
+            throw new IllegalArgumentException("El binario debe tener una longitud de " + SystemConfig.REGISTER_VALUE_SIZE);
         }
 
         char bitSign = binary.charAt(0);
@@ -94,7 +94,7 @@ public class BinaryUtils {
         if (instructionParts.size() == 3) {
             binaryInstruction += numberToBinary(Integer.parseInt(instructionParts.get(2)));
         } else {
-            binaryInstruction += "0".repeat(SystemConstants.REGISTER_VALUE_SIZE);
+            binaryInstruction += "0".repeat(SystemConfig.REGISTER_VALUE_SIZE);
         }
         return binaryInstruction.trim();
     }

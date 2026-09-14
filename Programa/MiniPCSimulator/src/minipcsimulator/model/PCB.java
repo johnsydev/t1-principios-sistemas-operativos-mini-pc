@@ -1,6 +1,6 @@
 package minipcsimulator.model;
 
-import minipcsimulator.utils.SystemConstants;
+import minipcsimulator.utils.SystemConfig;
 
 public class PCB {
     public enum ProcessState {
@@ -29,9 +29,9 @@ public class PCB {
     
     // al iniciar el proceso
     public PCB(int id, int startPosition) {
-        this.PID = 100+id;                                                       // 4 es el tamaño fijo de PCB + cantidad de registros
+        this.PID = 100+id;                            // 4 es el tamaño fijo de PCB + cantidad de registros
         this.startPosition = startPosition;
-        this.memoryPosition = (SystemConstants.KERNEL_MEMORY_START_DEFAULT + (id-1)) * (4 + SystemConstants.REGISTERS_COUNT);
+        this.memoryPosition = (SystemConfig.KERNEL_MEMORY_START + (id-1)) * (4 + SystemConfig.REGISTERS_COUNT);
         this.state = ProcessState.NEW;
         this.PC = startPosition;
     }

@@ -2,7 +2,7 @@ package minipcsimulator.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import minipcsimulator.utils.SystemConstants;
+import minipcsimulator.utils.SystemConfig;
 
 public class MainMemory {
     
@@ -13,7 +13,7 @@ public class MainMemory {
      * Inicia la memoria principal con un arreglo de instrucciones vacías con el tamaño especificado.
      */
     public MainMemory() { 
-        memory = new MemoryRegister[SystemConstants.MEMORY_SIZE];
+        memory = new MemoryRegister[SystemConfig.getMemorySize()];
     }
 
     public void setPosition(int address, MemoryRegister register) {
@@ -53,7 +53,7 @@ public class MainMemory {
         for (MemoryRegister memr : memory) {
             if (memr == null) {
                 
-                if (i < SystemConstants.USER_MEMORY_START_DEFAULT) {
+                if (i < SystemConfig.getUserMemoryStart()) {
                     if (countPauseKernelStart == -1) {
                         countPauseKernelStart = i;
                     }

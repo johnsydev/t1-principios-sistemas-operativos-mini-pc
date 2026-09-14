@@ -4,26 +4,22 @@
  */
 package minipcsimulator.controller;
 
-import minipcsimulator.gui.VentanaPrincipal;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-
-import minipcsimulator.services.FileManager;
-import minipcsimulator.services.AsmParser;
-import minipcsimulator.services.BinaryUtils;
-
-import minipcsimulator.model.Instruction;
-import minipcsimulator.model.Loader;
-import minipcsimulator.model.MainMemory;
-import minipcsimulator.model.Process;
-import minipcsimulator.model.PCB.ProcessState;
+import minipcsimulator.gui.VentanaPrincipal;
 import minipcsimulator.model.CPU;
 import minipcsimulator.model.Dispatcher;
-import minipcsimulator.model.PCB;
+import minipcsimulator.model.Loader;
+import minipcsimulator.model.MainMemory;
 import minipcsimulator.model.MemoryRegister;
-import minipcsimulator.utils.SystemConstants;
+import minipcsimulator.model.PCB;
+import minipcsimulator.model.PCB.ProcessState;
+import minipcsimulator.model.Process;
+import minipcsimulator.services.AsmParser;
+import minipcsimulator.services.FileManager;
+import minipcsimulator.utils.SystemConfig;
 
 /**
  *
@@ -79,6 +75,20 @@ public class MiniPCController {
                 ejecutarTodoPrograma();
             }
         });
+
+        vista.getBtnAplicarConfig().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                aplicarConfiguraciones();
+            }
+        });
+
+        vista.getBtnLimpiar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reiniciarSistema();
+            }
+        });
     }
     
     public void actualizarVista() {
@@ -124,7 +134,7 @@ public class MiniPCController {
             listProcessMemory.set(zeroIndex, assignedId); // si hay procesos terminados, se reemplaza el primero
         }
 
-        this.process = new Process(assignedId, SystemConstants.USER_MEMORY_START_DEFAULT);
+        this.process = new Process(assignedId, SystemConfig.getUserMemoryStart());
         List<Object[]> loadedProgramInstructions = Loader.loadProgram(lines, asmArray, this.process);
 
         vista.deshabilitarConfiguraciones();
@@ -228,5 +238,45 @@ public class MiniPCController {
         vista.setBX(pcb.getBX());
         vista.setCX(pcb.getCX());
         vista.setDX(pcb.getDX());
+    }
+
+
+
+    // Utils
+
+    private void aplicarConfiguraciones() {
+        int memorySize = vista.getTamanoMemoriaSeleccionado();
+        int kernelSize = vista.getLimiteKernelSeleccionado();
+
+        if (memorySize <= 0 || kernelSize < 0 || kernelSize >= memorySize || kernelSize < SystemConfig.USER_MEMORY_START_MIN 
+            || memorySize > SystemConfig.MEMORY_SIZE_MAX || memorySize < SystemConfig.MEMORY_SIZE_MIN || kernelSize > SystemConfig.MEMORY_SIZE_MAX-16) {
+            vista.mostrarError("Rango de memoria inválido. Asegúrese de que el inicio sea menor que el fin y ambos estén dentro del rango permitido.");
+            return;
+        }
+
+        SystemConfig.setMemorySize(memorySize);
+        SystemConfig.setUserMemoryStart(kernelSize);
+
+        this.memory = null; //sacamos memoria vieja
+        this.cpu = null; //sacamos cpu vieja
+
+        this.memory = new MainMemory(); // ponemos memoria nueva
+        this.cpu = new CPU(this.memory); // ponemos cpu nueva
+
+        System.out.println("Configuraciones aplicadas correctamente.");
+    }
+
+    private void reiniciarSistema() {
+        this.memory = null; //sacamos memoria vieja
+        this.cpu = null; //sacamos cpu vieja
+
+        this.memory = new MainMemory(); // ponemos memoria nueva
+        this.cpu = new CPU(this.memory); // ponemos cpu nueva
+
+        this.process = null; // sacamos proceso viejo
+        listProcessMemory.clear(); // limpiamos lista de procesos
+
+        vista.limpiarVista();
+        vista.habilitarConfiguraciones();
     }
 }

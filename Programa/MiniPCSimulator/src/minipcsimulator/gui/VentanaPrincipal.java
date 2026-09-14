@@ -9,6 +9,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Stream;
 
+import minipcsimulator.utils.SystemConfig;
+
 public class VentanaPrincipal extends JFrame {
 
     // Paleta de colores
@@ -163,8 +165,8 @@ public class VentanaPrincipal extends JFrame {
         JLabel lblRAM = crearLabel("Tamaño RAM");
         JLabel lblKernel = crearLabel("Espacio Kernel");
 
-        spTamanoMemoria = new JSpinner(new SpinnerNumberModel(256, 128, 1024, 16));
-        spLimiteKernel = new JSpinner(new SpinnerNumberModel(64, 16, 256, 8));
+        spTamanoMemoria = new JSpinner(new SpinnerNumberModel(SystemConfig.getMemorySize(), SystemConfig.MEMORY_SIZE_MIN, SystemConfig.MEMORY_SIZE_MAX, 16));
+        spLimiteKernel = new JSpinner(new SpinnerNumberModel(SystemConfig.getUserMemoryStart(), SystemConfig.USER_MEMORY_START_MIN, SystemConfig.MEMORY_SIZE_MAX-16, 8));
 
         estilizarSpinner(spTamanoMemoria);
         estilizarSpinner(spLimiteKernel);
@@ -507,6 +509,31 @@ public class VentanaPrincipal extends JFrame {
         for (Object[] fila : listaMemoria) {
             modeloTablaMemoria.addRow(fila);
         }
+    }
+    
+    public void deshabilitarConfiguraciones() {
+        spTamanoMemoria.setEnabled(false);
+        spLimiteKernel.setEnabled(false);
+        btnAplicarConfig.setEnabled(false);
+    }
+
+    public void habilitarConfiguraciones() {
+        spTamanoMemoria.setEnabled(true);
+        spLimiteKernel.setEnabled(true);
+        btnAplicarConfig.setEnabled(true);
+    }
+
+    public void limpiarVista() {
+        modeloTablaInstrucciones.setRowCount(0);
+        modeloTablaMemoria.setRowCount(0);
+        setEstadoBCP("ESPERANDO ARCHIVO");
+        setPC(0);
+        setIR("0");
+        setAC(0);
+        setAX(0);
+        setBX(0);
+        setCX(0);
+        setDX(0);
     }
 
     // Getters y Setters
