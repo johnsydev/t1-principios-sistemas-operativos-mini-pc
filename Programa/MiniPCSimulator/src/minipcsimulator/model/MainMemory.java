@@ -16,6 +16,11 @@ public class MainMemory {
         memory = new MemoryRegister[SystemConfig.getMemorySize()];
     }
 
+    /**
+     * Función para almacenar un registro de memoria en la memoria principal.
+     * @param address La posición de memoria donde se almacenará el registro.
+     * @param register El objeto MemoryRegister que se almacenará en la memoria.
+     */
     public void setPosition(int address, MemoryRegister register) {
         memory[address] = register;
     }
@@ -38,6 +43,11 @@ public class MainMemory {
         return memory[address];
     }
 
+    /**
+     * Función para recuperar una instrucción de la memoria principal.
+     * @param address La posición de memoria desde donde se recuperará la instrucción.
+     * @return El objeto Instruction almacenado en la posición de memoria especificada.
+     */
     public Instruction getInstruction(int address) {
         MemoryRegister memReg = memory[address];
         if (memReg != null) {
@@ -46,6 +56,10 @@ public class MainMemory {
         return null;
     }
 
+    /**
+     * Función para obtener todas las posiciones de memoria y sus valores, que se utiliza para mostrar en la GUI (tabla de memoria).
+     * @return Una lista de arreglos de objetos que contiene la posición de memoria, el valor original y su representación binaria.
+     */
     public List<Object[]> getAllMemoryRows() {
         List<Object[]> memoryList = new ArrayList<>();
         int i = 0;

@@ -1,11 +1,15 @@
 package minipcsimulator.utils;
 
+/**
+ * Clase que contiene la configuración del sistema.
+ */
 public class SystemConfig {
 
-    // VALORES POR DEFECTO
+    // VALORES POR DEFECTO, EDITABLES
     private static int memorySize = 256;
     private static int userMemoryStart = 64;
 
+    // NO EDITABLES
     //RAM
     public static final int MEMORY_SIZE_MIN = 128; //minimo según enunciado
     public static final int MEMORY_SIZE_MAX = 65536; //maximo (64 KB)
@@ -20,14 +24,27 @@ public class SystemConfig {
     public static final int REGISTER_VALUE_SIZE = 8; // números
     public static final int REGISTERS_COUNT = 4;
 
+    /**
+     * Obtiene el tamaño total de la memoria del sistema.
+     * @return El tamaño total de la memoria del sistema.
+     */
     public static int getMemorySize() {
         return memorySize;
     }
 
+    /**
+     * Obtiene la posición de inicio de la memoria de usuario.
+     * @return La posición de inicio de la memoria de usuario.
+     */
     public static int getUserMemoryStart() {
         return userMemoryStart;
     }
 
+    /**
+     * Establece el tamaño total de la memoria del sistema.
+     * @param memorySize El tamaño total de la memoria del sistema.
+     * @throws IllegalArgumentException Si el tamaño de memoria está fuera del rango permitido.
+     */
     public static void setMemorySize(int memorySize) {
         if (memorySize < MEMORY_SIZE_MIN || memorySize > MEMORY_SIZE_MAX) {
             throw new IllegalArgumentException("El tamaño de memoria debe estar entre " + MEMORY_SIZE_MIN + " y " + MEMORY_SIZE_MAX);
@@ -35,6 +52,11 @@ public class SystemConfig {
         SystemConfig.memorySize = memorySize;
     }
 
+    /**
+     * Establece la posición de inicio de la memoria de usuario.
+     * @param userMemoryStart La posición de inicio de la memoria de usuario.
+     * @throws IllegalArgumentException Si la posición de inicio de memoria de usuario está fuera del rango permitido.
+     */
     public static void setUserMemoryStart(int userMemoryStart) {
         if (userMemoryStart < USER_MEMORY_START_MIN || userMemoryStart >= memorySize) {
             throw new IllegalArgumentException("El inicio de memoria de usuario debe estar entre " + USER_MEMORY_START_MIN + " y " + (memorySize - 1));
@@ -42,6 +64,10 @@ public class SystemConfig {
         SystemConfig.userMemoryStart = userMemoryStart;
     }
 
+    /**
+     * Obtiene el tamaño de la memoria disponible para los procesos de usuario.
+     * @return El tamaño de la memoria disponible para los procesos de usuario.
+     */
     public static int getUserMemorySize() {
         return memorySize - userMemoryStart;
     }

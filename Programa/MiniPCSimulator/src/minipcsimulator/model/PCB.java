@@ -2,7 +2,12 @@ package minipcsimulator.model;
 
 import minipcsimulator.utils.SystemConfig;
 
+/**
+ * Clase que representa el PCB (Process Control Block) de un proceso en el sistema operativo simulado.
+ */
 public class PCB {
+
+    // Estados del proceso posibles
     public enum ProcessState {
         NEW, //al seleccionar el archivo
         READY, //al cargar el programa a memoria
@@ -11,11 +16,12 @@ public class PCB {
         EXIT //al terminar de ejecutarse
     }
 
+    // Posiciones en memoria
     private int memoryPosition;
     private int startPosition;
     private int endPosition;
     
-    
+    // Información del PCB
     private int PID = 0;
     private ProcessState state = ProcessState.NEW;
     private int PC = 0; // Program Counter
@@ -28,34 +34,65 @@ public class PCB {
     private int DX = 0;
     
     // al iniciar el proceso
+
+    /**
+     * Constructor de la clase PCB.
+     * Inicializa el PCB con el ID del proceso (los procesos inician en 100) y la posición de inicio en memoria.
+     * @param id El identificador del proceso (número simple que inicia en 1 y es asignado por el Kernel).
+     * @param startPosition La posición de inicio en memoria del proceso.
+     */
     public PCB(int id, int startPosition) {
-        this.PID = 100+id;                            // 4 es el tamaño fijo de PCB + cantidad de registros
-        this.startPosition = startPosition;
+        this.PID = 100+id;                            
+        this.startPosition = startPosition;         // 4 es el tamaño fijo de PCB + cantidad de registros
         this.memoryPosition = (SystemConfig.KERNEL_MEMORY_START + (id-1)) * (4 + SystemConfig.REGISTERS_COUNT);
         this.state = ProcessState.NEW;
         this.PC = startPosition;
     }
 
+    /**
+     * Calcula la posición final del proceso en memoria, basada en la cantidad de instrucciones que tiene, para evitar desbordamiento de memoria.
+     * @param instructionsCount La cantidad de instrucciones del proceso.
+     */
     public void configEndPosition(int instructionsCount) {
         this.endPosition = startPosition + instructionsCount;
     }
 
+    /**
+     * Obtiene la posición de inicio en memoria del proceso.
+     * @return La posición de inicio en memoria del proceso.
+     */
     public int getStartPosition() {
         return startPosition;
     }
 
+    /**
+     * Obtiene la posición final en memoria del proceso, para validar que el PC no se salga del rango de memoria del proceso.
+     * @return La posición final en memoria del proceso.
+     */
     public int getEndPosition() {
         return endPosition;
     }
 
+    /**
+     * Obtiene el ID del proceso.
+     * @return El ID del proceso.
+     */
     public int getPID() {
         return PID;
     }
 
+    /**
+     * Obtiene el estado actual del proceso.
+     * @return El estado actual del proceso.
+     */
     public ProcessState getState() {
         return state;
     }
 
+    /**
+     * Obtiene la posición en memoria del proceso.
+     * @return La posición en memoria del proceso.
+     */
     public int getMemoryPosition() {
         return memoryPosition;
     }
@@ -67,6 +104,8 @@ public class PCB {
     public void setState(ProcessState state) {
         this.state = state;
     }
+
+    // Getters / Setters para registros:
 
     public int getPC() {
         return PC;

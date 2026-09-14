@@ -22,8 +22,8 @@ import minipcsimulator.services.FileManager;
 import minipcsimulator.utils.SystemConfig;
 
 /**
- *
- * @author johns
+ * Clase MiniPCController que actúa como Kernel del sistema simulado.
+ * @author johnsydev
  */
 public class MiniPCController {
     //private MiniPCModel modelo;
@@ -35,6 +35,10 @@ public class MiniPCController {
     // lista de procesos: [1, 0, 3, ...], los procesos en 0 terminaron y se pueden reemplazar
     // los que tienen número ese es su ID
 
+    /**
+     * Constructor de la clase MiniPCController.
+     * Inicializa la vista, la memoria principal y el CPU.
+     */
     public MiniPCController() {
         this.vista = new VentanaPrincipal();
         this.memory = new MainMemory();
@@ -47,7 +51,12 @@ public class MiniPCController {
         this.vista.setVisible(true);
     }
     
+    /**
+     * Agrega los listeners a los botones de la GUI para manejar las acciones del usuario.
+     * Cuando se presiona un botón en la UI, se ejecuta la acción que se defina en esta sección.
+     */
     public void agregarListeners() {
+        // Botón para seleccionar archivo .asm
         vista.getBtnSeleccionar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,6 +64,7 @@ public class MiniPCController {
             }
         });
 
+        // Botón para cargar el programa en memoria RAM
         vista.getBtnCargar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -62,6 +72,7 @@ public class MiniPCController {
             }
         });
 
+        // Botón para ejecutar un paso del programa (modo paso a paso)
         vista.getBtnPasoAPaso().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -69,6 +80,7 @@ public class MiniPCController {
             }
         });
 
+        // Botón para ejecutar todo el programa de una vez
         vista.getBtnEjecutar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,6 +88,7 @@ public class MiniPCController {
             }
         });
 
+        // Botón para aplicar las configuraciones de memoria principal y espacio de kernel
         vista.getBtnAplicarConfig().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -83,6 +96,7 @@ public class MiniPCController {
             }
         });
 
+        // Botón para reiniciar el sistema, limpiando la memoria y los procesos
         vista.getBtnLimpiar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -167,6 +181,11 @@ public class MiniPCController {
         vista.actualizarTablaMemoria(memoryRows);
     }
 
+    /**
+     * Esto valida que el proceso esté en un estado válido para ejecutar (READY o RUNNING).
+     * Si el proceso está en estado EXIT, NEW o BLOCKED, se muestra un mensaje de error y no se permite la ejecución.
+     * @return true si el proceso está en un estado válido para ejecutar, false de lo contrario.
+     */
     private boolean validarParaEjecutar() {
         if (this.process == null) {
             vista.mostrarError("No hay un programa cargado. Seleccione un archivo .asm primero.");
@@ -211,6 +230,12 @@ public class MiniPCController {
         vista.actualizarTablaMemoria(memoryRows);
     }
 
+    /**
+     * Esto ejecuta todo el programa de una vez, actualizando la vista de la memoria y el estado del proceso.
+     * Utiliza un bucle llamando a ejecutarPasoAPaso() hasta que el proceso termine (estado EXIT).
+     * Si el proceso ya está en estado EXIT, se muestra un mensaje de error y no se permite la continuar la ejecución.
+     * Estado del proceso RUNNING
+     */
     private void ejecutarTodoPrograma() {
         if (!validarParaEjecutar()) {
             return;
@@ -220,6 +245,11 @@ public class MiniPCController {
         }
     }
 
+    /**
+     * Esto guarda los registros del CPU en la memoria RAM y actualiza la vista de la memoria.
+     * NOTA: Esto se hace para que se pueda visualizar el proceso en la GUI en la memoria principal tal como se solicitó, posteriormente se debe modificar.
+     * Estado del proceso RUNNING
+     */
     private void saveRegistersIntoMemory() {
         PCB pcb = this.process.getPCB();
         pcb.setPC(this.cpu.getPC());
@@ -254,6 +284,9 @@ public class MiniPCController {
 
     // Utils
 
+    /**
+     * Aplica las configuraciones seleccionadas por el usuario.
+     */
     private void aplicarConfiguraciones() {
         int memorySize = vista.getTamanoMemoriaSeleccionado();
         int kernelSize = vista.getLimiteKernelSeleccionado();
@@ -276,6 +309,9 @@ public class MiniPCController {
         System.out.println("Configuraciones aplicadas correctamente.");
     }
 
+    /**
+     * Reinicia el sistema, limpiando la memoria y el CPU, y actualizando la vista.
+     */
     private void reiniciarSistema() {
         this.memory = null; //sacamos memoria vieja
         this.cpu = null; //sacamos cpu vieja

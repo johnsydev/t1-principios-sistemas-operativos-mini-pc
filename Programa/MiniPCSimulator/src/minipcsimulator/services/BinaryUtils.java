@@ -3,14 +3,20 @@ package minipcsimulator.services;
 import java.util.ArrayList;
 import minipcsimulator.utils.SystemConfig;
 
+/**
+ * Clase que se encarga de convertir instrucciones y registros a binario y viceversa.
+ */
 public class BinaryUtils {
+    // Codigos binarios
     public enum BinaryCodes {
+        // Instrucciones
         LOAD("0001", 1, "INSTRUCTION"), 
         STORE("0010", 2, "INSTRUCTION"), 
         ADD("0101", 3, "INSTRUCTION"), 
         SUB("0100", 4, "INSTRUCTION"), 
         MOV("0011", 5, "INSTRUCTION"),
 
+        // Registros
         AX("0001", 5, "REGISTER"),
         BX("0010", 6, "REGISTER"),
         CX("0011", 7, "REGISTER"),
@@ -20,6 +26,7 @@ public class BinaryUtils {
         private final int id;
         private final String type;
 
+        // Constructor
         BinaryCodes(String binaryCode, int id, String type) {
             this.binaryCode = binaryCode;
             this.id = id;
@@ -34,7 +41,11 @@ public class BinaryUtils {
             return type;
         }
 
-        // Con esto se puede acceder al código binario de las instrucciones y registros
+        /**
+         * Obtiene el valor binario de un nombre.
+         * @param name El nombre de la instrucción o registro.
+         * @return El valor binario correspondiente al nombre, o null si no se encuentra.
+         */
         public static String getValueOf(String name) {
             try {
                 return BinaryCodes.valueOf(name.toUpperCase()).getBinaryCode();
@@ -43,6 +54,12 @@ public class BinaryUtils {
             }
         }
 
+        /**
+         * Obtiene el objeto BinaryCodes correspondiente a un valor binario y un tipo de dato.
+         * @param code El valor binario.
+         * @param type El tipo de dato (INSTRUCTION o REGISTER).
+         * @return El objeto BinaryCodes correspondiente, o null si no se encuentra.
+         */
         public static BinaryCodes getByBinaryCode(String code, String type) {
             for (BinaryCodes codes : values()) {
                 if (codes.binaryCode.equals(code) && codes.type.equals(type)) {
@@ -53,6 +70,11 @@ public class BinaryUtils {
         }
     }
 
+    /**
+     * Convierte un número entero a su representación binaria de 8 bits, considerando el bit de signo.
+     * @param number El número entero a convertir.
+     * @return La representación binaria del número como una cadena de 8 bits.
+     */
     public static String numberToBinary(int number) {
         char bitSigno = '0';
         if (number < 0) {
@@ -71,6 +93,11 @@ public class BinaryUtils {
         return bitSigno + binarioValor;
     }
 
+    /**
+     * Convierte una representación binaria de 8 bits a su valor entero, considerando el bit de signo.
+     * @param binary La representación binaria como una cadena de 8 bits.
+     * @return El valor entero correspondiente al binario.
+     */
     public static int binaryToNumber(String binary) {
         if (binary.length() != SystemConfig.REGISTER_VALUE_SIZE) {
             throw new IllegalArgumentException("El binario debe tener una longitud de " + SystemConfig.REGISTER_VALUE_SIZE);
@@ -87,6 +114,11 @@ public class BinaryUtils {
         return number;
     }
 
+    /**
+     * Traduce una instrucción a su representación binaria en el sistema.
+     * @param instructionParts Un ArrayList de partes de la instrucción (opcode, registro, valor).
+     * @return La representación binaria de la instrucción como una cadena.
+     */
     public static String translateToBinary(ArrayList<String> instructionParts) {
         String binaryInstruction = "";
         binaryInstruction += BinaryCodes.getValueOf(instructionParts.get(0)) + " ";
