@@ -22,11 +22,12 @@ public class VentanaPrincipal extends JFrame {
     private static final Color TEXT = new Color(235, 238, 242);
     private static final Color TEXT_SECONDARY = new Color(155, 163, 174);
 
-    private static final Color BLUE = new Color(45, 140, 240);
-    private static final Color GREEN = new Color(45, 190, 115);
-    private static final Color RED = new Color(220, 75, 85);
-    private static final Color CYAN = new Color(65, 190, 205);
-    private static final Color ORANGE = new Color(235, 160, 65);
+    // Colores de botones oscurecidos para optimizar el contraste con texto blanco
+    private static final Color BLUE = new Color(30, 95, 165);
+    private static final Color GREEN = new Color(30, 130, 80);
+    private static final Color RED = new Color(160, 45, 55);
+    private static final Color CYAN = new Color(35, 120, 135);
+    private static final Color ORANGE = new Color(175, 105, 35);
 
     // Componentes de la interfaz
     private JButton btnSeleccionar, btnCargar, btnPasoAPaso, btnEjecutar, btnLimpiar;
@@ -47,8 +48,8 @@ public class VentanaPrincipal extends JFrame {
     private void initComponents() {
         setTitle("Mini PC Simulator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1250, 720);
-        setMinimumSize(new Dimension(1050, 650));
+        setSize(1300, 720);
+        setMinimumSize(new Dimension(1100, 650));
         setLocationRelativeTo(null);
 
         getContentPane().setBackground(BG_MAIN);
@@ -116,7 +117,7 @@ public class VentanaPrincipal extends JFrame {
         panelPrincipal.setBorder(new EmptyBorder(16, 14, 16, 14));
         panelPrincipal.setPreferredSize(new Dimension(220, 0));
 
-        JLabel titulo = crearTitulo("CONTROLES");
+        JLabel titulo = crearTituloCentrado("CONTROLES");
         panelPrincipal.add(titulo);
         panelPrincipal.add(Box.createVerticalStrut(14));
 
@@ -145,7 +146,7 @@ public class VentanaPrincipal extends JFrame {
         panelPrincipal.add(separador);
         panelPrincipal.add(Box.createVerticalStrut(18));
 
-        JLabel tituloRAM = crearTitulo("MEMORIA PRINCIPAL");
+        JLabel tituloRAM = crearTituloCentrado("MEMORIA PRINCIPAL");
         panelPrincipal.add(tituloRAM);
         panelPrincipal.add(Box.createVerticalStrut(14));
 
@@ -248,12 +249,13 @@ public class VentanaPrincipal extends JFrame {
         panelPrincipal.setBorder(new EmptyBorder(16, 14, 16, 14));
         panelPrincipal.setPreferredSize(new Dimension(330, 0));
 
-        JLabel titulo = crearTitulo("PROCESO");
+        JLabel titulo = crearTituloCentrado("PROCESO");
         panelPrincipal.add(titulo);
         panelPrincipal.add(Box.createVerticalStrut(14));
 
         JPanel cardProceso = crearCard();
         cardProceso.setLayout(new BorderLayout(8, 8));
+        cardProceso.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
 
         lblProcessID = new JLabel("Sin proceso cargado");
         lblProcessID.setForeground(TEXT);
@@ -269,15 +271,16 @@ public class VentanaPrincipal extends JFrame {
         panelPrincipal.add(cardProceso);
         panelPrincipal.add(Box.createVerticalStrut(18));
 
-        JLabel tituloCPU = crearTitulo("REGISTROS CPU");
+        JLabel tituloCPU = crearTituloCentrado("REGISTROS CPU");
         panelPrincipal.add(tituloCPU);
         panelPrincipal.add(Box.createVerticalStrut(12));
 
-        JPanel registros = new JPanel(new GridLayout(4, 2, 8, 8));
+        // Panel de registros con GridLayout (3 filas x 2 columnas)
+        JPanel registros = new JPanel(new GridLayout(3, 2, 8, 8));
         registros.setOpaque(false);
+        registros.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
 
         txtPC = crearCampoRegistro();
-        txtIR = crearCampoRegistro();
         txtAC = crearCampoRegistro();
         txtAX = crearCampoRegistro();
         txtBX = crearCampoRegistro();
@@ -285,18 +288,20 @@ public class VentanaPrincipal extends JFrame {
         txtDX = crearCampoRegistro();
 
         registros.add(crearRegistroCard("PC", txtPC));
-        registros.add(crearRegistroCard("IR", txtIR));
         registros.add(crearRegistroCard("AC", txtAC));
         registros.add(crearRegistroCard("AX", txtAX));
         registros.add(crearRegistroCard("BX", txtBX));
         registros.add(crearRegistroCard("CX", txtCX));
         registros.add(crearRegistroCard("DX", txtDX));
 
-        JPanel vacio = new JPanel();
-        vacio.setOpaque(false);
-        registros.add(vacio);
+        // Registro IR de ancho completo
+        txtIR = crearCampoRegistro();
+        JPanel cardIR = crearRegistroCard("IR (Instruction Register)", txtIR);
+        cardIR.setMaximumSize(new Dimension(Integer.MAX_VALUE, 65));
 
         panelPrincipal.add(registros);
+        panelPrincipal.add(Box.createVerticalStrut(8));
+        panelPrincipal.add(cardIR);
 
         return panelPrincipal;
     }
@@ -333,7 +338,7 @@ public class VentanaPrincipal extends JFrame {
         return panel;
     }
 
-    // Crea un botón principal estilizado
+    // Crea un botón principal estilizado con colores optimizados
     private JButton crearBoton(String texto, Color color) {
         JButton boton = new JButton(texto);
         boton.setPreferredSize(new Dimension(190, 38));
@@ -388,7 +393,7 @@ public class VentanaPrincipal extends JFrame {
         tabla.setIntercellSpacing(new Dimension(0, 0));
         tabla.setBackground(BG_CARD);
         tabla.setForeground(TEXT);
-        tabla.setSelectionBackground(new Color(45, 90, 140)); // Color de selección (azul claro)
+        tabla.setSelectionBackground(new Color(45, 90, 140));
         tabla.setSelectionForeground(Color.WHITE);
         tabla.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
@@ -450,7 +455,7 @@ public class VentanaPrincipal extends JFrame {
 
         JLabel label = new JLabel(nombre);
         label.setForeground(TEXT_SECONDARY);
-        label.setFont(new Font("SansSerif", Font.BOLD, 10));
+        label.setFont(new Font("SansSerif", Font.BOLD, 11));
 
         panel.add(label, BorderLayout.NORTH);
         panel.add(campo, BorderLayout.CENTER);
@@ -458,11 +463,12 @@ public class VentanaPrincipal extends JFrame {
         return panel;
     }
 
-    // Crea etiquetas de texto secundarias
-    private JLabel crearTitulo(String texto) {
-        JLabel label = new JLabel(texto);
+    // Crea etiquetas de título centradas para los paneles principales
+    private JLabel crearTituloCentrado(String texto) {
+        JLabel label = new JLabel(texto, JLabel.CENTER);
         label.setForeground(TEXT_SECONDARY);
-        label.setFont(new Font("SansSerif", Font.BOLD, 11));
+        label.setFont(new Font("SansSerif", Font.BOLD, 12));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
 
@@ -524,7 +530,6 @@ public class VentanaPrincipal extends JFrame {
             modeloTablaMemoria.addRow(fila);
         }
         
-        // Seleccionar la fila de forma nativa para que se pinte con el color de selección de la tabla
         if (indiceResaltado >= 0 && indiceResaltado < tablaMemoria.getRowCount()) {
             tablaMemoria.setRowSelectionInterval(indiceResaltado, indiceResaltado);
             tablaMemoria.scrollRectToVisible(tablaMemoria.getCellRect(indiceResaltado, 0, true));

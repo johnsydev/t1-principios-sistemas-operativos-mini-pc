@@ -116,6 +116,11 @@ public class MiniPCController {
      * Genera la tabla de instrucciones en la GUI
      */
     private void seleccionarArchivo() {
+        if (this.process != null) {
+            vista.mostrarError("Ya hay un programa cargado. Debe finalizarlo y limpiar el sistema antes de cargar otro.");
+            return;
+        }
+
         ArrayList<String> lines = new ArrayList<>();
         try {
             lines = FileManager.loadFile();
@@ -177,6 +182,10 @@ public class MiniPCController {
     private void cargarPrograma() {
         if (this.process == null) {
             vista.mostrarError("No hay un programa cargado. Seleccione un archivo .asm primero.");
+            return;
+        }
+        if (this.process.getPCB().getState() != PCB.ProcessState.NEW) {
+            vista.mostrarError("El programa ya ha sido cargado en memoria. No se puede cargar nuevamente.");
             return;
         }
 

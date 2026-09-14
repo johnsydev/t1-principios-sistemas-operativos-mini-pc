@@ -2,7 +2,7 @@
 # Mini PC Simulator
 
 <p align="left">
-  <img src="https://res.cloudinary.com/dpuuo4mfh/image/upload/v1789406034/simulatorimgt1so_f9lchv.png" width="1000" alt="Vista previa del simulador">
+  <img src="https://res.cloudinary.com/dpuuo4mfh/image/upload/v1789428731/simulatorimgt1so2_r6cqry.png" width="1000" alt="Vista previa del simulador">
 </p>
 
 ## Información del proyecto
