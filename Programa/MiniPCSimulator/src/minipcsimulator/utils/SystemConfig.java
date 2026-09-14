@@ -41,4 +41,8 @@ public class SystemConfig {
         }
         SystemConfig.userMemoryStart = userMemoryStart;
     }
+
+    public static int getUserMemorySize() {
+        return memorySize - userMemoryStart;
+    }
 }

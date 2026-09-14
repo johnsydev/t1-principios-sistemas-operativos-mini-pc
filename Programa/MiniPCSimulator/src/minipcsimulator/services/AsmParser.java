@@ -9,9 +9,13 @@ public class AsmParser {
 
     public static ArrayList<ArrayList<String>> verifySyntax(ArrayList<String> lines) {
         AsmParser.numberLine = 0;
+        AsmParser.newLines.clear();
         for (String line : lines) {
             AsmParser.numberLine++;
-            if (!line.trim().isEmpty() && !isValidInstruction(line)) {
+            if (line.trim().isEmpty()) {
+                continue; 
+            }
+            if (!isValidInstruction(line)) {
                 throw new RuntimeException("Error de sintaxis en la linea " + AsmParser.numberLine);
             }
         }
@@ -29,7 +33,10 @@ public class AsmParser {
         ArrayList<String> validRegisters = new ArrayList<>(Arrays.asList(
             "AX", "BX", "CX", "DX"
         ));
-        return validRegisters.contains(register);
+        if (!validRegisters.contains(register)) {
+            throw new RuntimeException("Error de sintaxis: Registro no reconocido en la línea " + AsmParser.numberLine);
+        }
+        return true;
     }
 
     public static boolean isValidNumber(String number) {
@@ -49,17 +56,28 @@ public class AsmParser {
         "LOAD", "STORE", "ADD", "SUB", "MOV"
         ));
 
-        if (!validInstructions.contains(parts.get(0))) return false;
-
+        if (!validInstructions.contains(parts.get(0))) {
+            throw new RuntimeException("Error de sintaxis: Instrucción no reconocida en la línea " + AsmParser.numberLine);
+        }
 
         switch (parts.get(0)) {
             case "LOAD":
             case "STORE":
             case "ADD":
             case "SUB":
-                return parts.size() == 2 && isValidRegister(parts.get(1).trim());
+                if (parts.size() == 2 && isValidRegister(parts.get(1).trim())) {
+                    return true;
+                }
+                else {
+                    throw new RuntimeException("Error de sintaxis: Instrucción " + parts.get(0) + " requiere un registro válido en la línea " + AsmParser.numberLine);
+                }
             case "MOV":
-                return parts.size() == 3 && isValidRegister(parts.get(1).trim()) && isValidNumber(parts.get(2).trim());
+                if (parts.size() == 3 && isValidRegister(parts.get(1).trim()) && isValidNumber(parts.get(2).trim())) {
+                    return true;
+                }
+                else {
+                    throw new RuntimeException("Error de sintaxis: Instrucción " + parts.get(0) + " requiere un registro y un valor numérico válidos en la línea " + AsmParser.numberLine);
+                }
             default:
                 return false;
         }

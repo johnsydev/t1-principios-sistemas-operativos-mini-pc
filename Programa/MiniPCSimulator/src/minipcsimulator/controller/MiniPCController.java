@@ -118,6 +118,16 @@ public class MiniPCController {
             return;
         }
 
+        if (asmArray.isEmpty()) {
+            vista.mostrarError("El archivo está vacío o no contiene instrucciones válidas.");
+            return;
+        }
+
+        if (asmArray.size() > SystemConfig.getUserMemorySize()) {
+            vista.mostrarError("El programa ingresado es demasiado grande para la memoria disponible. Tamaño máximo permitido: " + SystemConfig.getUserMemorySize() + " instrucciones.");
+            return;
+        }
+
         System.out.println("Archivo cargado y verificado correctamente.");
         System.out.println(asmArray);
 
